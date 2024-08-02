@@ -1,4 +1,5 @@
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import { Container, Grid, Card, CardContent, Typography, CardMedia, Box } from '@mui/material';
 import Link from 'next/link';
 import { searchMovies } from '../services/tmdbApi';
@@ -8,19 +9,23 @@ import { useEffect, useState } from 'react';
 import SearchInput from '../components/SearchInput';
 import { format, parseISO, Locale } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
-import Head from 'next/head';
 
 interface SearchProps {
   initialResults: Movie[];
   query: string;
+  initialLanguage: string;
 }
 
-const Search = ({ initialResults, query }: SearchProps) => {
+const Search = ({ initialResults, query, initialLanguage }: SearchProps) => {
   const { t, i18n } = useTranslation('common');
   const [results, setResults] = useState<Movie[]>(initialResults);
   const [loading, setLoading] = useState<boolean>(false);
 
   const locales: { [key: string]: Locale } = { en: enUS, es };
+
+  useEffect(() => {
+    i18n.changeLanguage(initialLanguage);
+  }, [initialLanguage]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,6 +99,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       initialResults,
       query,
+      initialLanguage: language,
     },
   };
 };
