@@ -4,12 +4,14 @@ import { Container, Grid, Card, CardContent, Typography, CardMedia } from '@mui/
 import Link from 'next/link';
 import tmdbApi from '../services/tmdbApi';
 import { Movie } from '@/types/types';
+import { useTranslation } from 'react-i18next';
 
 const Search = () => {
   const router = useRouter();
   const { query } = router.query;
   const [results, setResults] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     if (query) {
@@ -27,12 +29,12 @@ const Search = () => {
     }
   }, [query]);
 
-  if (loading) return <Container>Loading...</Container>;
+  if (loading) return <Container>{t('loading')}.</Container>;
 
   return (
     <Container>
       <Typography variant="h4" component="h2" gutterBottom>
-        Search Results
+        {t('searchResults')}
       </Typography>
       <Grid container spacing={4}>
         {results.map((movie) => (

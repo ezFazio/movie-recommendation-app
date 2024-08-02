@@ -1,5 +1,6 @@
 import { AppProps } from 'next/app';
 import { Provider } from 'react-redux';
+import '../locale/i18n';
 import { ThemeProvider } from '@mui/material/styles';
 import { lightTheme, darkTheme } from '@/theme/theme';
 import CssBaseline from '@mui/material/CssBaseline';
