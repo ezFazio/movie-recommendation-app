@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { TextField, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import i18n from '@/locale/i18n';
 
 const SearchInput = () => {
   const router = useRouter();
@@ -14,7 +15,7 @@ const SearchInput = () => {
   const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?query=${searchQuery}`);
+      router.push(`/${i18n.language}/search?query=${searchQuery}`);
     }
   };
 

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Container, Typography, Box, Card, CardContent, CardMedia } from '@mui/material';
-import tmdbApi, { getMovieDetails } from '@/services/tmdbApi';
+import { getMovieDetails } from '@/services/tmdbApi';
 import { Movie } from '@/types/types';
 import { useTranslation } from 'react-i18next';
 
@@ -10,15 +10,21 @@ const MovieDetails = () => {
   const { id } = router.query;
   const [movie, setMovie] = useState<Movie | null>(null);
   const { t, i18n } = useTranslation('common');
-  const language = i18n.language;
+  const { locale } = router;
+  
+  useEffect(() => {
+    if (locale && locale !== i18n.language && (locale === 'es' || locale === 'en')) {
+      i18n.changeLanguage(locale);
+    }
+  }, [locale, i18n]);
 
   useEffect(() => {
     if (id) {
-      getMovieDetails(parseInt(id as string), language)
+      getMovieDetails(parseInt(id as string), i18n.language)
         .then(data => setMovie(data))
         .catch(error => console.error('Error fetching movie details:', error));
     }
-  }, [id, language]);
+  }, [id, i18n.language]);
 
   if (!movie) return <div>{t('loading')}</div>;
 

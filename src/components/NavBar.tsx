@@ -1,8 +1,11 @@
 import { AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem } from '@mui/material';
-import Link from 'next/link';
 import { Brightness4, Brightness7, Language } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store';
+import { setLocale } from '@/store/localeSlice';
+import { useRouter } from 'next/router';
 
 interface NavBarProps {
   darkMode: boolean;
@@ -10,9 +13,11 @@ interface NavBarProps {
 }
 
 const NavBar: React.FC<NavBarProps> = ({ darkMode, toggleDarkMode }) => {
-  const { t } = useTranslation('common');
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation('common');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+  const { locale, asPath } = router;
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -24,16 +29,22 @@ const NavBar: React.FC<NavBarProps> = ({ darkMode, toggleDarkMode }) => {
 
   const handleLanguageChange = (lng: string) => {
     i18n.changeLanguage(lng);
+    dispatch(setLocale(lng));
+  
+    const path = router.asPath;
+    const newUrl = path.replace(`/${locale}`, `/${lng}`);
+  
+    router.push(newUrl, undefined, { locale: lng });
     handleMenuClose();
   };
 
-  return( 
-  <AppBar position="static">
-    <Toolbar>
-      <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-        {t('title')}
-      </Typography>
-      <IconButton
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          {t('title')}
+        </Typography>
+        <IconButton
           edge="end"
           color="inherit"
           onClick={handleMenuOpen}
@@ -50,19 +61,19 @@ const NavBar: React.FC<NavBarProps> = ({ darkMode, toggleDarkMode }) => {
           <MenuItem onClick={() => handleLanguageChange('en')}>English</MenuItem>
           <MenuItem onClick={() => handleLanguageChange('es')}>Español</MenuItem>
         </Menu>
-      <IconButton
-        edge="end"
-        color="inherit"
-        onClick={toggleDarkMode}
-        aria-label="toggle dark mode"
-      >
-        {darkMode ? <Brightness7 /> : <Brightness4 />}
-      </IconButton>
-      <Button color="inherit" component={Link} href="/">
-        {t("home")}
-      </Button>
-    </Toolbar>
-  </AppBar>
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={toggleDarkMode}
+          aria-label="toggle dark mode"
+        >
+          {darkMode ? <Brightness7 /> : <Brightness4 />}
+        </IconButton>
+        <Button color="inherit" href={`/${locale}`}>
+          {t("home")}
+        </Button>
+      </Toolbar>
+    </AppBar>
   );
 };
 

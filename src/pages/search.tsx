@@ -82,13 +82,13 @@ const Search = ({ initialResults, query, initialLanguage }: SearchProps) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { query } = context.query;
-  const language = context.locale || 'en';
+  const { query, locale } = context;
+  const language = locale || 'en';
   let initialResults: Movie[] = [];
 
-  if (query) {
+  if (query.query) {
     try {
-      const response = await searchMovies(query as string, language);
+      const response = await searchMovies(query.query as string, language);
       initialResults = response.results;
     } catch (error) {
       console.error('Error fetching search results:', error);
@@ -98,7 +98,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       initialResults,
-      query,
+      query: query.query || '',
       initialLanguage: language,
     },
   };
