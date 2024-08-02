@@ -1,36 +1,35 @@
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { GetServerSideProps } from 'next';
 import { Container, Grid, Card, CardContent, Typography, CardMedia } from '@mui/material';
 import Link from 'next/link';
 import { searchMovies } from '../services/tmdbApi';
 import { Movie } from '@/types/types';
 import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
-const Search = () => {
-  const router = useRouter();
-  const { query } = router.query;
-  const [results, setResults] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+interface SearchProps {
+  initialResults: Movie[];
+  query: string;
+}
+
+const Search = ({ initialResults, query }: SearchProps) => {
   const { t, i18n } = useTranslation('common');
-  const language = i18n.language;
+  const router = useRouter();
+  const [results, setResults] = useState<Movie[]>(initialResults);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if (query) {
+    const fetchData = async () => {
       setLoading(true);
-      searchMovies(query as string, language)
-        .then(response => {
-          setResults(response.results);
-        })
-        .catch(error => {
-          console.error('Error fetching search results:', error);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [query, language]);
+      const response = await searchMovies(query, i18n.language);
+      setResults(response.results);
+      setLoading(false);
+    };
 
-  if (loading) return <Container>{t('loading')}.</Container>;
+    fetchData();
+  }, [i18n.language, query]);
+
+  if (loading) return <Container>{t('loading')}...</Container>;
 
   return (
     <Container>
@@ -46,14 +45,14 @@ const Search = () => {
                   component="img"
                   alt={movie.title}
                   height="140"
-                  image={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "./img/movie.svg"} 
+                  image={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "./img/movie.svg"}
                 />
                 <CardContent>
                   <Typography variant="h5" component="div">
                     {movie.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {new Date(movie.release_date).toLocaleDateString()}
+                    {new Date(movie.release_date).toLocaleDateString(i18n.language)}
                   </Typography>
                 </CardContent>
               </Card>
@@ -63,6 +62,28 @@ const Search = () => {
       </Grid>
     </Container>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { query } = context.query;
+  const language = context.locale || 'en';
+  let initialResults: Movie[] = [];
+
+  if (query) {
+    try {
+      const response = await searchMovies(query as string, language);
+      initialResults = response.results;
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+    }
+  }
+
+  return {
+    props: {
+      initialResults,
+      query,
+    },
+  };
 };
 
 export default Search;
