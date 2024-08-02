@@ -2,6 +2,7 @@ import { SetStateAction, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Container, TextField, Button, Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import Head from 'next/head';
 
 const Home = () => {
   const [query, setQuery] = useState('');
@@ -15,6 +16,9 @@ const Home = () => {
 
   return (
     <Container maxWidth="sm">
+      <Head>
+        <title>{t('title')}</title>
+      </Head>
       <Box my={4} textAlign="center">
         <Typography variant="h3" component="h1" gutterBottom>
           {t('title')}

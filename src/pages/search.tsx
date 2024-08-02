@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import SearchInput from '../components/SearchInput';
 import { format, parseISO, Locale } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
+import Head from 'next/head';
 
 interface SearchProps {
   initialResults: Movie[];
@@ -36,6 +37,9 @@ const Search = ({ initialResults, query }: SearchProps) => {
 
   return (
     <Container>
+      <Head>
+        <title>{t('searchResults')} - {query}</title>
+      </Head>
       <Box mt={4}>
         <Typography variant="h4" component="h2" gutterBottom>
           {t('searchResults')}
