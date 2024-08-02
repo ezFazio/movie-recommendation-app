@@ -1,11 +1,11 @@
 import { GetServerSideProps } from 'next';
-import { Container, Grid, Card, CardContent, Typography, CardMedia } from '@mui/material';
+import { Container, Grid, Card, CardContent, Typography, CardMedia, Box } from '@mui/material';
 import Link from 'next/link';
 import { searchMovies } from '../services/tmdbApi';
 import { Movie } from '@/types/types';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import SearchInput from '../components/SearchInput';
 
 interface SearchProps {
   initialResults: Movie[];
@@ -14,7 +14,6 @@ interface SearchProps {
 
 const Search = ({ initialResults, query }: SearchProps) => {
   const { t, i18n } = useTranslation('common');
-  const router = useRouter();
   const [results, setResults] = useState<Movie[]>(initialResults);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -33,9 +32,14 @@ const Search = ({ initialResults, query }: SearchProps) => {
 
   return (
     <Container>
-      <Typography variant="h4" component="h2" gutterBottom>
-        {t('searchResults')}
-      </Typography>
+      <Box mt={4}>
+        <Typography variant="h4" component="h2" gutterBottom>
+          {t('searchResults')}
+        </Typography>
+      </Box>
+      <Box mb={4}>
+        <SearchInput />
+      </Box>
       <Grid container spacing={4}>
         {results.map((movie) => (
           <Grid item key={movie.id} xs={12} sm={6} md={4}>
