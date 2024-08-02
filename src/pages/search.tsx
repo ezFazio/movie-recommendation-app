@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Container, Grid, Card, CardContent, Typography, CardMedia } from '@mui/material';
 import Link from 'next/link';
-import tmdbApi from '../services/tmdbApi';
+import { searchMovies } from '../services/tmdbApi';
 import { Movie } from '@/types/types';
 import { useTranslation } from 'react-i18next';
 
@@ -11,14 +11,15 @@ const Search = () => {
   const { query } = router.query;
   const [results, setResults] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
+  const language = i18n.language;
 
   useEffect(() => {
     if (query) {
       setLoading(true);
-      tmdbApi.get('/search/movie', { params: { query, include_adult: false } })
+      searchMovies(query as string, language)
         .then(response => {
-          setResults(response.data.results);
+          setResults(response.results);
         })
         .catch(error => {
           console.error('Error fetching search results:', error);

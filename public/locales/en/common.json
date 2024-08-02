@@ -2,8 +2,10 @@
     "details": "Details",
     "home": "Home",
     "loading": "Loading...",
+    "rating": "Rating",
+    "releaseDate": "Release date",
     "search": "Search",
     "searchForMovies": "Search for movies",
-    "searchResults": "Search Results",
+    "searchResults": "Search results",
     "title": "Movie Recommendation App"
   }

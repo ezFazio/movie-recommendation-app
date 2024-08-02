@@ -1,25 +1,26 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Container, Typography, Box, Card, CardContent, CardMedia } from '@mui/material';
-import tmdbApi from '@/services/tmdbApi';
+import tmdbApi, { getMovieDetails } from '@/services/tmdbApi';
 import { Movie } from '@/types/types';
+import { useTranslation } from 'react-i18next';
 
 const MovieDetails = () => {
   const router = useRouter();
   const { id } = router.query;
   const [movie, setMovie] = useState<Movie | null>(null);
+  const { t, i18n } = useTranslation('common');
+  const language = i18n.language;
 
   useEffect(() => {
     if (id) {
-      tmdbApi.get(`/movie/${id}`)
-        .then(response => setMovie(response.data))
-        .catch(error => {
-          console.error('Error fetching movie:', error);
-        });
+      getMovieDetails(parseInt(id as string), language)
+        .then(data => setMovie(data))
+        .catch(error => console.error('Error fetching movie details:', error));
     }
-  }, [id]);
+  }, [id, language]);
 
-  if (!movie) return <div>Loading...</div>;
+  if (!movie) return <div>{t('loading')}</div>;
 
   return (
     <Container>
@@ -39,10 +40,10 @@ const MovieDetails = () => {
               {movie.overview}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Release Date: {new Date(movie.release_date).toLocaleDateString()}
+              {t('releaseDate')}: {new Date(movie.release_date).toLocaleDateString()}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Rating: {movie.vote_average}
+              {t('rating')}: {movie.vote_average}
             </Typography>
           </CardContent>
         </Card>
