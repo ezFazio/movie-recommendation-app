@@ -6,6 +6,8 @@ import { Movie } from '@/types/types';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import SearchInput from '../components/SearchInput';
+import { format, parseISO, Locale } from 'date-fns';
+import { enUS, es } from 'date-fns/locale';
 
 interface SearchProps {
   initialResults: Movie[];
@@ -16,6 +18,8 @@ const Search = ({ initialResults, query }: SearchProps) => {
   const { t, i18n } = useTranslation('common');
   const [results, setResults] = useState<Movie[]>(initialResults);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const locales: { [key: string]: Locale } = { en: enUS, es };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,14 +53,14 @@ const Search = ({ initialResults, query }: SearchProps) => {
                   component="img"
                   alt={movie.title}
                   height="140"
-                  image={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "./img/movie.svg"}
+                  image={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "./img/movie.svg"} 
                 />
                 <CardContent>
                   <Typography variant="h5" component="div">
                     {movie.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {new Date(movie.release_date).toLocaleDateString(i18n.language)}
+                    {movie.release_date ? format(parseISO(movie.release_date), 'P', { locale: locales[i18n.language as keyof typeof locales] }) : 'N/A'}
                   </Typography>
                 </CardContent>
               </Card>
