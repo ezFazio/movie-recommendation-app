@@ -43,7 +43,7 @@ const Search = () => {
                   component="img"
                   alt={movie.title}
                   height="140"
-                  image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
+                  image={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "./img/movie.svg"} 
                 />
                 <CardContent>
                   <Typography variant="h5" component="div">
