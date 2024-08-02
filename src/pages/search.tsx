@@ -28,7 +28,7 @@ const Search = () => {
           setLoading(false);
         });
     }
-  }, [query]);
+  }, [query, language]);
 
   if (loading) return <Container>{t('loading')}.</Container>;
 
